@@ -1,0 +1,519 @@
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+import type { Plant } from '../../domain/model/plants.entity';
+import { usePlantManagementStore } from '../../application/plants.store';
+
+interface Filter {
+  id: string;
+  label: string;
+  count: number;
+}
+
+const router = useRouter();
+const activeFilter = ref('all');
+const searchQuery = ref('');
+const plantStore = usePlantManagementStore();
+
+onMounted(() => {
+  plantStore.fetchPlants();
+});
+
+const filters = computed<Filter[]>(() => [
+  { id: 'all',      label: 'All Plants', count: plantStore.plants.length },
+  { id: 'healthy',  label: 'Healthy',    count: plantStore.plants.filter(p => p.status === 'healthy').length },
+  { id: 'warning',  label: 'Warning',    count: plantStore.plants.filter(p => p.status === 'warning').length },
+  { id: 'critical', label: 'Critical',   count: plantStore.plants.filter(p => p.status === 'critical').length },
+]);
+
+const filteredPlants = computed(() => {
+  let result = activeFilter.value === 'all'
+      ? plantStore.plants
+      : plantStore.plants.filter(plant => plant.status === activeFilter.value);
+
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    result = result.filter(plant =>
+        plant.name.toLowerCase().includes(query) ||
+        plant.type.toLowerCase().includes(query)
+    );
+  }
+  return result;
+});
+
+const getStatusLabel = (status: string) =>
+    status.charAt(0).toUpperCase() + status.slice(1);
+
+const navigateToPlant = (plantId: number) => router.push(`/plants/${plantId}`);
+const handleAddPlant      = () => router.push('/plants/new');
+const handleAddFirstPlant = () => router.push('/plants/new');
+
+function formatDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleString('es-PE', {
+    year: 'numeric', month: 'short', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  });
+}
+
+const getLatestHumidity = (plant: Plant): number | string => {
+  if (!plant.metrics?.length) return 'N/A';
+  const latest = [...plant.metrics].sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  )[0];
+  return latest?.airHumidityPct ?? 'N/A';
+};
+</script>
+
+<template>
+  <div class="plants">
+    <div class="header">
+      <h1 class="title">My Plants</h1>
+      <div class="actions">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <InputText
+              v-model="searchQuery"
+              placeholder="Search plants..."
+              class="search-input"
+          />
+        </div>
+        <Button
+            class="add-button"
+            @click="handleAddPlant"
+        >
+          <span class="add-icon">➕</span>
+          <span>Add Plant</span>
+        </Button>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button
+          v-for="filter in filters"
+          :key="filter.id"
+          :class="['filter-button', { active: activeFilter === filter.id }]"
+          @click="activeFilter = filter.id"
+      >
+        {{ filter.label }} ({{ filter.count }})
+      </button>
+    </div>
+
+    <div v-if="plantStore.loading" class="loading-state">
+      <div class="loading-icon">🌱</div>
+      <p>Loading your plants...</p>
+    </div>
+    <div v-else-if="filteredPlants.length > 0" class="plants-grid">
+      <div
+          v-for="plant in filteredPlants"
+          :key="plant.id"
+          class="plant-card"
+          @click="navigateToPlant(plant.id)"
+      >
+        <div class="plant-image">
+          <img class="plant-img" :src="plant.imgUrl" alt="Imagen de la planta" />
+          <div :class="['plant-status', plant.status]">
+            <span class="status-dot"></span>
+            <span>{{ getStatusLabel(plant.status) }}</span>
+          </div>
+        </div>
+        <div class="plant-content">
+          <h3 class="plant-name">{{ plant.name }}</h3>
+          <p class="plant-type">{{ plant.type }}</p>
+          <div class="plant-stats">
+            <div class="stat-item">
+              <span class="stat-label">Humidity</span>
+              <span class="stat-value">{{ getLatestHumidity(plant) }}%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Last Watered</span>
+              <span class="stat-value">{{ formatDate(plant.lastWatered) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="empty-state">
+      <div class="empty-icon">🌱</div>
+      <h2 class="empty-title">No plants found</h2>
+      <p class="empty-description">
+        {{ activeFilter === 'all'
+          ? "Start by adding your first plant to your collection"
+          : `No plants with ${activeFilter} status` }}
+      </p>
+      <Button
+          label="Add Your First Plant"
+          class="btn-primary"
+          @click="handleAddFirstPlant"
+      />
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.plants {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-extrabold);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 12px 18px;
+  min-width: 300px;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.search-box:focus-within {
+  border-color: var(--primary-green);
+  box-shadow: var(--shadow-green);
+  transform: translateY(-2px);
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.search-input {
+  border: none !important;
+  background: transparent !important;
+  outline: none !important;
+  flex: 1;
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.search-input::placeholder {
+  color: var(--text-light);
+}
+
+.add-button {
+  display: flex !important;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--gradient-primary) !important;
+  color: #ffffff !important;
+  border: none !important;
+  padding: 14px 28px;
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-green);
+}
+
+.add-button:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: var(--shadow-xl);
+}
+
+.add-icon {
+  display: flex;
+  align-items: center;
+}
+
+.filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+
+.filter-button {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  padding: 10px 20px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.filter-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.filter-button:hover {
+  border-color: var(--primary-green);
+  color: var(--primary-green);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-button.active {
+  background: var(--gradient-primary);
+  border-color: var(--primary-green);
+  color: #ffffff;
+  box-shadow: var(--shadow-green);
+}
+
+.filter-button.active::before {
+  left: 0;
+}
+
+.plants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.plant-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.plant-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-2xl);
+  border-color: var(--primary-green);
+}
+
+.plant-image {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, var(--secondary-green) 0%, var(--primary-green) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.plant-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: 180px;
+  max-height: 180px;
+  display: block;
+  margin: auto;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  background: transparent;
+  transition: transform 0.4s ease;
+}
+
+.plant-card:hover .plant-img {
+  transform: scale(1.1);
+}
+
+.plant-status {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plant-status.healthy {
+  color: var(--status-healthy);
+}
+
+.plant-status.warning {
+  color: var(--status-warning);
+}
+
+.plant-status.critical {
+  color: var(--status-critical);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.plant-content {
+  padding: var(--spacing-lg);
+}
+
+.plant-name {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.plant-type {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-md) 0;
+}
+
+.plant-stats {
+  display: flex;
+  justify-content: space-between;
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-light);
+}
+
+.stat-value {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-primary);
+}
+
+.empty-state, .loading-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-lg);
+}
+
+.loading-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-lg);
+  animation: bounce 2s infinite;
+}
+
+.empty-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.empty-description {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+.btn-primary {
+  background: var(--primary-green) !important;
+  border: none !important;
+  color: #ffffff !important;
+  padding: 12px 24px;
+  font-weight: var(--font-weight-semibold);
+}
+
+.btn-primary:hover {
+  background: #7ab531 !important;
+}
+
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .search-box {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .add-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .plants-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plant-image {
+    height: 140px;
+  }
+  .plant-img {
+    max-width: 120px;
+    max-height: 120px;
+  }
+}
+</style>
