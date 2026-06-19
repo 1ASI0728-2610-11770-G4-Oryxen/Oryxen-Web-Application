@@ -1,0 +1,256 @@
+/* Import modern Google Fonts (Inter for the app shell, Raleway for Oryxen brand surfaces) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Raleway:wght@400;600;700&display=swap');
+
+/* ===========================================================================
+   Design system (shared DDD modules: sidebar, header, dashboard, plants, analytics)
+   =========================================================================== */
+:root {
+    /* Colores de fondo */
+    --bg-primary: #fafbfc;
+    --bg-secondary: #f5f7fa;
+    --bg-card: #ffffff;
+    --bg-sidebar: #ffffff;
+
+    /* Colores de texto */
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-tertiary: #94a3b8;
+    --text-light: #cbd5e1;
+
+    /* Colores de borde */
+    --border-color: #e2e8f0;
+
+    /* Color primario verde */
+    --primary-green: #22c55e;
+    --primary-green-hover: #16a34a;
+    --primary-green-light: rgba(34, 197, 94, 0.1);
+    --secondary-green: #10b981;
+
+    /* Gradientes modernos */
+    --gradient-primary: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
+    --gradient-accent: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --gradient-warm: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    --gradient-cool: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+    --gradient-shine: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+
+    /* Colores de estado */
+    --status-success: #22c55e;
+    --status-warning: #f59e0b;
+    --status-critical: #ef4444;
+    --status-info: #3b82f6;
+    --status-healthy: #22c55e;
+
+    /* Espaciado */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-2xl: 48px;
+
+    /* Border radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+
+    /* Tamaños de fuente */
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 24px;
+    --font-size-2xl: 32px;
+    --font-size-3xl: 40px;
+
+    /* Peso de fuente */
+    --font-weight-normal: 400;
+    --font-weight-regular: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    --font-weight-extrabold: 800;
+
+    /* Sombras */
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 24px -4px rgba(0, 0, 0, 0.15), 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 40px -8px rgba(0, 0, 0, 0.2), 0 10px 20px -4px rgba(0, 0, 0, 0.12);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-green: 0 8px 20px -4px rgba(34, 197, 94, 0.3);
+    --shadow-blue: 0 8px 20px -4px rgba(59, 130, 246, 0.3);
+
+    --accent-dark: #03383c;
+}
+
+/* Tema oscuro */
+[data-theme="dark"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #1e293b;
+    --bg-sidebar: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --text-light: #475569;
+    --border-color: #334155;
+    --status-success: #22c55e;
+    --status-warning: #fbbf24;
+    --status-critical: #f87171;
+    --status-info: #60a5fa;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 10px 24px -4px rgba(0, 0, 0, 0.7);
+    --shadow-xl: 0 20px 40px -8px rgba(0, 0, 0, 0.8);
+}
+
+/* ===========================================================================
+   Oryxen brand tokens (auth views, telemetry dashboard, cards — shared w/ Landing)
+   =========================================================================== */
+:root {
+    --oryxen-background: hsl(48, 25%, 95%);
+    --oryxen-foreground: hsl(184, 100%, 10%);
+    --oryxen-primary: hsl(81, 59%, 54%);
+    --oryxen-primary-strong: hsl(81, 59%, 44%);
+    --oryxen-accent: hsl(184, 92%, 11%);
+    --oryxen-muted: hsl(184, 30%, 40%);
+    --oryxen-card: hsl(0, 0%, 100%);
+    --oryxen-border: hsl(48, 25%, 85%);
+
+    --oryxen-critical: hsl(0, 72%, 51%);
+    --oryxen-warning: hsl(38, 92%, 50%);
+    --oryxen-good: hsl(140, 50%, 45%);
+    --oryxen-optimal: hsl(160, 70%, 38%);
+}
+
+[data-theme="dark"] .p-card {
+    background-color: var(--bg-card, #1e293b) !important;
+    border-color: var(--border-color, #334155) !important;
+    color: var(--text-primary, #f1f5f9) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+[data-theme="dark"] .p-card .p-card-title,
+[data-theme="dark"] .p-card .p-card-content {
+    color: inherit !important;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estilos para sobrescribir PrimeVue si es necesario */
+.p-button {
+    font-family: inherit;
+}
+
+.p-button:focus {
+    box-shadow: none !important;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-tertiary);
+    border-radius: var(--radius-md);
+    border: 2px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-green);
+}
+
+/* Utilidades generales */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.text-center { text-align: center; }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+
+.gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Animaciones útiles */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* PrimeVue Dialog customization */
+.p-dialog,
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-footer,
+.plan-option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.p-dialog-mask,
+.p-dialog-wrapper {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px);
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="dark"] .glass {
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
