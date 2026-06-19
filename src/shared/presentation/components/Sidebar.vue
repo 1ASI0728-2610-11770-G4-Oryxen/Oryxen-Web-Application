@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 //import logo from '../../../assets/pc_logo_green.png';
 
 interface SidebarProps {
@@ -12,6 +13,7 @@ const emit  = defineEmits<{ close: [] }>();
 
 const router = useRouter();
 const route  = useRoute();
+const auth   = useAuthStore();
 
 const navItems = [
   { path: '/dashboard', name: 'Dashboard', label: 'Dashboard', icon: '📊' },
@@ -24,6 +26,7 @@ const isActiveRoute = (path: string) =>
     path === '/' ? route.path === '/' : route.path.startsWith(path);
 
 const handleLogout = () => {
+  auth.logout();
   localStorage.removeItem('token');
   localStorage.removeItem('userUuid');
   localStorage.removeItem('email');

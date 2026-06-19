@@ -1,33 +1,25 @@
-import axios, { type AxiosInstance } from 'axios';
+import type { AxiosInstance } from 'axios';
+import { apiClient } from '@/services/httpClient';
 
-
-const platformApi: string = import.meta.env.VITE_ORYXEN_API_URL;
-
+/**
+ * Reconciled BaseApi: instead of creating its own axios instance against the old
+ * json-server URL, it exposes the centralized `apiClient` (JWT Bearer + refresh,
+ * base URL `http://localhost:5170/api/v1`). Existing services keep working unchanged.
+ */
 export class BaseApi {
-
-    private httpInstance: AxiosInstance;
-
-    constructor() {
-        // Inicializamos la instancia de Axios.
-        this.httpInstance = axios.create({
-            baseURL: platformApi,
-        });
-    }
-
-
-    public get http(): AxiosInstance {
-        return this.httpInstance;
-    }
+  public get http(): AxiosInstance {
+    return apiClient;
+  }
 }
 
 export const ENDPOINTS = {
-    PLANTS: import.meta.env.VITE_PLANTS_ENDPOINT_PATH || '/plants',
-    ANALYTICS: import.meta.env.VITE_ANALYTICS_ENDPOINT_PATH || '/analytics',
-    USERS: import.meta.env.VITE_USERS_ENDPOINT_PATH?.trim() || '/users',
-    PROFILES: import.meta.env.VITE_PROFILES_ENDPOINT_PATH || '/profiles',
-    POSTS: import.meta.env.VITE_POSTS_ENDPOINT_PATH || '/posts',
-    COMMENTS: import.meta.env.VITE_COMMENTS_ENDPOINT_PATH || '/comments',
-    REACTIONS: import.meta.env.VITE_REACTIONS_ENDPOINT_PATH || '/reactions',
-    PLANTREPORTS: import.meta.env.VITE_PLANTREPORTS_ENDPOINT_PATH || '/plantReports',
-    AUTH_REGISTER: '/auth/register'
+  PLANTS: '/plants',
+  ANALYTICS: '/analytics',
+  USERS: '/users',
+  PROFILES: '/profiles',
+  POSTS: '/posts',
+  COMMENTS: '/comments',
+  REACTIONS: '/reactions',
+  PLANTREPORTS: '/plantReports',
+  AUTH_REGISTER: '/auth/register',
 };

@@ -1,23 +1,12 @@
-import axios, { type AxiosInstance } from "axios";
+import type { AxiosInstance } from 'axios';
+import { apiClient } from '@/services/httpClient';
 
-
-const platformApi: string = import.meta.env.VITE_ORYXEN_API_URL;
-
+/**
+ * Reconciled BaseApi: delegates to the centralized `apiClient` (JWT Bearer + refresh,
+ * unified `:5170/api/v1` base URL) instead of building its own axios instance.
+ */
 export class BaseApi {
-
-    private httpInstance: AxiosInstance;
-
-    constructor() {
-        this.httpInstance = axios.create({
-            baseURL: platformApi,
-            headers: {
-                'Cache-Control': 'no-cache',
-            },
-        });
-    }
-
-
-    public get http(): AxiosInstance {
-        return this.httpInstance;
-    }
+  public get http(): AxiosInstance {
+    return apiClient;
+  }
 }

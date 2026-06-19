@@ -1,23 +1,6 @@
-import axios from 'axios';
-import type { AxiosInstance } from 'axios';
+// Reconciled connector: the shared HTTP client now delegates to the centralized
+// Phase 3 `apiClient` so every module (analytics, plants, ...) inherits the JWT
+// Bearer interceptor, single-flight refresh and the unified `:5170/api/v1` base URL.
+import { apiClient } from '@/services/httpClient';
 
-const API_BASE_URL: string = (import.meta.env.VITE_ORYXEN_API_URL as string) || '/api/v1';
-
-
-const http: AxiosInstance = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-    },
-    timeout: 30000,
-    withCredentials: false
-});
-
-
-http.defaults.headers.common['Content-Type'] = 'application/json';
-http.defaults.headers.common['Accept'] = 'application/json';
-
-
-export default http;
+export default apiClient;
