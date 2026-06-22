@@ -1,22 +1,29 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import RegisterForm from '@/components/auth/RegisterForm.vue';
+
+const { t } = useI18n();
 </script>
 
 <template>
   <section class="auth-page">
     <div class="auth-page__card">
       <div class="auth-page__brand">
-        <img src="@/assets/logo.svg" alt="Oryxen logo" class="auth-page__logo" />
-        <h1 class="auth-page__title">Oryxen</h1>
+        <img src="@/assets/logo.svg" :alt="t('auth.logoAlt')" class="auth-page__logo" />
+        <h1 class="auth-page__title">{{ t('common.appName') }}</h1>
       </div>
-      <p class="auth-page__subtitle">Create your account and start growing.</p>
+      <p class="auth-page__subtitle">{{ t('auth.registerSubtitle') }}</p>
 
       <RegisterForm />
 
       <p class="auth-page__alt">
-        Already have an account?
-        <RouterLink to="/login">Sign in</RouterLink>
+        {{ t('auth.haveAccount') }}
+        <RouterLink to="/login">{{ t('auth.signInLink') }}</RouterLink>
+      </p>
+
+      <p class="auth-page__legal">
+        <RouterLink to="/terms">{{ t('terms.title') }}</RouterLink>
       </p>
     </div>
   </section>
@@ -76,5 +83,16 @@ import RegisterForm from '@/components/auth/RegisterForm.vue';
   color: var(--oryxen-primary-strong);
   font-weight: 600;
   text-decoration: none;
+}
+
+.auth-page__legal {
+  text-align: center;
+  font-size: 0.75rem;
+  margin-top: 0.8rem;
+}
+
+.auth-page__legal a {
+  color: var(--oryxen-muted);
+  text-decoration: underline;
 }
 </style>

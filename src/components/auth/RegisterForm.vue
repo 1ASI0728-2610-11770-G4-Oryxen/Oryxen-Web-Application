@@ -2,12 +2,14 @@
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { AxiosError } from 'axios';
+import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import { useAuthStore } from '@/stores/auth';
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const router = useRouter();
 
@@ -21,6 +23,7 @@ const passwordTooShort = computed(() => password.value.length > 0 && password.va
 const canSubmit = computed(
   () => fullName.value.trim().length > 0 && email.value.trim().length > 0 && password.value.length >= 8,
 );
+const hasError = computed(() => errorMessage.value.length > 0);
 
 async function onSubmit(): Promise<void> {
   if (!canSubmit.value) return;
@@ -43,51 +46,61 @@ async function onSubmit(): Promise<void> {
 
 function resolveError(error: unknown): string {
   if (error instanceof AxiosError) {
-    if (error.response?.status === 409) return 'An account with this email already exists.';
+    if (error.response?.status === 409) return t('auth.errors.emailExists');
     const title = (error.response?.data as { title?: string } | undefined)?.title;
     if (title) return title;
   }
-  return 'Unable to create the account. Please try again.';
+  return t('auth.errors.registerFailed');
 }
 </script>
 
 <template>
-  <form class="auth-form" @submit.prevent="onSubmit">
+  <form class="auth-form" @submit.prevent="onSubmit" novalidate>
     <label class="auth-form__field">
-      <span class="auth-form__label">Full name</span>
-      <InputText v-model="fullName" autocomplete="name" placeholder="Abraham Estrada" fluid />
+      <span class="auth-form__label">{{ t('auth.fullName') }}</span>
+      <InputText
+        v-model="fullName"
+        autocomplete="name"
+        :placeholder="t('auth.fullNamePlaceholder')"
+        aria-required="true"
+        :aria-invalid="hasError"
+        fluid
+      />
     </label>
 
     <label class="auth-form__field">
-      <span class="auth-form__label">Email</span>
+      <span class="auth-form__label">{{ t('auth.email') }}</span>
       <InputText
         v-model="email"
         type="email"
         autocomplete="email"
-        placeholder="you@oryxen.io"
+        :placeholder="t('auth.emailPlaceholder')"
+        aria-required="true"
+        :aria-invalid="hasError"
         fluid
       />
     </label>
 
     <label class="auth-form__field">
-      <span class="auth-form__label">Password</span>
+      <span class="auth-form__label">{{ t('auth.password') }}</span>
       <Password
         v-model="password"
         toggle-mask
         autocomplete="new-password"
-        placeholder="At least 8 characters"
+        :placeholder="t('auth.newPasswordPlaceholder')"
+        :input-props="{ 'aria-required': 'true', 'aria-invalid': hasError || passwordTooShort }"
         fluid
       />
-      <small v-if="passwordTooShort" class="auth-form__hint">
-        Password must be at least 8 characters.
+      <small v-if="passwordTooShort" class="auth-form__hint" role="alert">
+        {{ t('auth.passwordTooShort') }}
       </small>
     </label>
 
-    <Message v-if="errorMessage" severity="error" :closable="false">{{ errorMessage }}</Message>
+    <Message v-if="errorMessage" severity="error" :closable="false" role="alert">{{ errorMessage }}</Message>
 
     <Button
       type="submit"
-      label="Create account"
+      :label="t('auth.createAccount')"
       icon="pi pi-user-plus"
       :loading="loading"
       :disabled="!canSubmit"

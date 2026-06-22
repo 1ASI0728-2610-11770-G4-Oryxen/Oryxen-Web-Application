@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import type { Plant } from '../../domain/model/plants.entity';
@@ -12,6 +13,7 @@ interface Filter {
   count: number;
 }
 
+const { t } = useI18n();
 const router = useRouter();
 const activeFilter = ref('all');
 const searchQuery = ref('');
@@ -22,10 +24,10 @@ onMounted(() => {
 });
 
 const filters = computed<Filter[]>(() => [
-  { id: 'all',      label: 'All Plants', count: plantStore.plants.length },
-  { id: 'healthy',  label: 'Healthy',    count: plantStore.plants.filter(p => p.status === 'healthy').length },
-  { id: 'warning',  label: 'Warning',    count: plantStore.plants.filter(p => p.status === 'warning').length },
-  { id: 'critical', label: 'Critical',   count: plantStore.plants.filter(p => p.status === 'critical').length },
+  { id: 'all',      label: t('plants.filters.all'),      count: plantStore.plants.length },
+  { id: 'healthy',  label: t('plants.filters.healthy'),  count: plantStore.plants.filter(p => p.status === 'healthy').length },
+  { id: 'warning',  label: t('plants.filters.warning'),  count: plantStore.plants.filter(p => p.status === 'warning').length },
+  { id: 'critical', label: t('plants.filters.critical'), count: plantStore.plants.filter(p => p.status === 'critical').length },
 ]);
 
 const filteredPlants = computed(() => {
@@ -43,8 +45,7 @@ const filteredPlants = computed(() => {
   return result;
 });
 
-const getStatusLabel = (status: string) =>
-    status.charAt(0).toUpperCase() + status.slice(1);
+const getStatusLabel = (status: string) => t(`plants.status.${status}`);
 
 const navigateToPlant = (plantId: string) => router.push(`/plants/${plantId}`);
 const handleAddPlant      = () => router.push('/plants/new');
@@ -72,22 +73,24 @@ const getLatestHumidity = (plant: Plant): number | string => {
 <template>
   <div class="plants">
     <div class="header">
-      <h1 class="title">My Plants</h1>
+      <h1 class="title">{{ t('plants.title') }}</h1>
       <div class="actions">
         <div class="search-box">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon" aria-hidden="true">🔍</span>
           <InputText
               v-model="searchQuery"
-              placeholder="Search plants..."
+              :placeholder="t('plants.searchPlaceholder')"
+              :aria-label="t('plants.searchPlaceholder')"
               class="search-input"
           />
         </div>
         <Button
             class="add-button"
+            :aria-label="t('plants.addPlant')"
             @click="handleAddPlant"
         >
-          <span class="add-icon">➕</span>
-          <span>Add Plant</span>
+          <span class="add-icon" aria-hidden="true">➕</span>
+          <span>{{ t('plants.addPlant') }}</span>
         </Button>
       </div>
     </div>
@@ -103,21 +106,25 @@ const getLatestHumidity = (plant: Plant): number | string => {
       </button>
     </div>
 
-    <div v-if="plantStore.loading" class="loading-state">
-      <div class="loading-icon">🌱</div>
-      <p>Loading your plants...</p>
+    <div v-if="plantStore.loading" class="loading-state" role="status" aria-live="polite">
+      <div class="loading-icon" aria-hidden="true">🌱</div>
+      <p>{{ t('plants.loading') }}</p>
     </div>
     <div v-else-if="filteredPlants.length > 0" class="plants-grid">
       <div
           v-for="plant in filteredPlants"
           :key="plant.id"
           class="plant-card"
+          role="button"
+          tabindex="0"
+          :aria-label="plant.name"
           @click="navigateToPlant(plant.id)"
+          @keydown.enter="navigateToPlant(plant.id)"
       >
         <div class="plant-image">
-          <img class="plant-img" :src="plant.imgUrl" alt="Imagen de la planta" />
+          <img class="plant-img" :src="plant.imgUrl" :alt="t('plants.plantImageAlt', { name: plant.name })" />
           <div :class="['plant-status', plant.status]">
-            <span class="status-dot"></span>
+            <span class="status-dot" aria-hidden="true"></span>
             <span>{{ getStatusLabel(plant.status) }}</span>
           </div>
         </div>
@@ -126,11 +133,11 @@ const getLatestHumidity = (plant: Plant): number | string => {
           <p class="plant-type">{{ plant.type }}</p>
           <div class="plant-stats">
             <div class="stat-item">
-              <span class="stat-label">Humidity</span>
+              <span class="stat-label">{{ t('plants.humidity') }}</span>
               <span class="stat-value">{{ getLatestHumidity(plant) }}%</span>
             </div>
             <div class="stat-item">
-              <span class="stat-label">Last Watered</span>
+              <span class="stat-label">{{ t('plants.lastWatered') }}</span>
               <span class="stat-value">{{ formatDate(plant.lastWatered) }}</span>
             </div>
           </div>
@@ -139,15 +146,15 @@ const getLatestHumidity = (plant: Plant): number | string => {
     </div>
 
     <div v-else class="empty-state">
-      <div class="empty-icon">🌱</div>
-      <h2 class="empty-title">No plants found</h2>
+      <div class="empty-icon" aria-hidden="true">🌱</div>
+      <h2 class="empty-title">{{ t('plants.empty') }}</h2>
       <p class="empty-description">
         {{ activeFilter === 'all'
-          ? "Start by adding your first plant to your collection"
-          : `No plants with ${activeFilter} status` }}
+          ? t('plants.emptyAll')
+          : t('plants.emptyFiltered', { status: t('plants.status.' + activeFilter) }) }}
       </p>
       <Button
-          label="Add Your First Plant"
+          :label="t('plants.addFirst')"
           class="btn-primary"
           @click="handleAddFirstPlant"
       />

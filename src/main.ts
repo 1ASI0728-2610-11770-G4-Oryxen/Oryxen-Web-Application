@@ -9,6 +9,7 @@ import './style.css';
 
 import App from './App.vue';
 import router from './router';
+import { i18n } from '@/i18n';
 import { useAuthStore } from '@/stores/auth';
 import { AUTH_EXPIRED_EVENT } from '@/services/tokenStorage';
 
@@ -17,6 +18,7 @@ const pinia = createPinia();
 
 app.use(pinia);
 app.use(router);
+app.use(i18n);
 app.use(PrimeVue, { theme: { preset: Aura } });
 app.use(ToastService);
 app.use(ConfirmationService);

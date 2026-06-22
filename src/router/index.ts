@@ -29,6 +29,13 @@ const routes: RouteRecordRaw[] = [
   // Alias used by the reconciled Sidebar logout (`router.push({ name: 'SignIn' })`).
   { path: '/signin', name: 'SignIn', redirect: { name: 'login' } },
 
+  // --- Public: Terms & Conditions (reachable by guests and authenticated users) ---
+  {
+    path: '/terms',
+    name: 'Terms',
+    component: () => import('@/views/Terms.vue'),
+  },
+
   // --- Authenticated app (sidebar + header shell) ---
   {
     path: '/dashboard',

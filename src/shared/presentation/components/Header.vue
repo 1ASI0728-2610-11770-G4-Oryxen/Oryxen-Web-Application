@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
+import { setLocale, type AppLocale } from '@/i18n';
 
 const emit = defineEmits<{
   menuClick: [];
 }>();
+
+const { t, locale } = useI18n();
 
 const theme = ref<'light' | 'dark'>('light');
 const isToggling = ref(false);
@@ -15,23 +19,41 @@ const toggleTheme = () => {
   document.documentElement.setAttribute('data-theme', theme.value);
   setTimeout(() => { isToggling.value = false; }, 500);
 };
+
+// Language switcher: button shows the language it will switch TO.
+const nextLocale = computed<AppLocale>(() => (locale.value === 'en' ? 'es' : 'en'));
+const langLabel = computed(() => (locale.value === 'en' ? 'ES' : 'EN'));
+const langAriaLabel = computed(() =>
+  locale.value === 'en' ? t('header.switchToSpanish') : t('header.switchToEnglish'),
+);
+const toggleLanguage = () => setLocale(nextLocale.value);
 </script>
 
 <template>
   <header class="header">
     <div class="header-left">
-      <Button class="menu-button" text @click="emit('menuClick')" aria-label="Menu">
-        <span class="menu-icon">☰</span>
+      <Button class="menu-button" text @click="emit('menuClick')" :aria-label="t('header.menu')">
+        <span class="menu-icon" aria-hidden="true">☰</span>
       </Button>
-      <h1 class="greeting">Welcome to <span class="gradient-text">Oryxen</span> 🌿</h1>
+      <h1 class="greeting">{{ t('header.welcome') }} <span class="gradient-text">{{ t('common.appName') }}</span> 🌿</h1>
     </div>
 
     <div class="header-right">
-      <Button class="theme-toggle" outlined @click="toggleTheme">
-        <span class="theme-icon" :class="{ rotating: isToggling }">
+      <Button
+        class="lang-toggle"
+        outlined
+        @click="toggleLanguage"
+        :aria-label="langAriaLabel"
+      >
+        <span aria-hidden="true">🌐</span>
+        <span>{{ langLabel }}</span>
+      </Button>
+
+      <Button class="theme-toggle" outlined @click="toggleTheme" :aria-label="t('header.toggleTheme')">
+        <span class="theme-icon" :class="{ rotating: isToggling }" aria-hidden="true">
           {{ theme === 'light' ? '🌙' : '☀️' }}
         </span>
-        <span>{{ theme === 'light' ? 'Dark' : 'Light' }}</span>
+        <span>{{ theme === 'light' ? t('header.themeDark') : t('header.themeLight') }}</span>
       </Button>
     </div>
   </header>
@@ -116,7 +138,8 @@ const toggleTheme = () => {
   gap: var(--spacing-lg);
 }
 
-.theme-toggle {
+.theme-toggle,
+.lang-toggle {
   background: var(--bg-primary) !important;
   border: 2px solid var(--border-color) !important;
   padding: 10px 18px;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth';
 //import logo from '../../../assets/pc_logo_green.png';
 
@@ -11,15 +12,16 @@ interface SidebarProps {
 const props = withDefaults(defineProps<SidebarProps>(), { isOpen: true });
 const emit  = defineEmits<{ close: [] }>();
 
+const { t } = useI18n();
 const router = useRouter();
 const route  = useRoute();
 const auth   = useAuthStore();
 
 const navItems = [
-  { path: '/dashboard', name: 'Dashboard', label: 'Dashboard', icon: '📊' },
-  { path: '/plants',    name: 'PlantsList', label: 'Plants',    icon: '🌱' },
-  { path: '/settings',  name: 'Settings',   label: 'Settings',  icon: '⚙️' },
-  { path: '/analytics', name: 'Analytics',  label: 'Analytics', icon: '📈' },
+  { path: '/dashboard', name: 'Dashboard', i18nKey: 'nav.dashboard', icon: '📊' },
+  { path: '/plants',    name: 'PlantsList', i18nKey: 'nav.plants',    icon: '🌱' },
+  { path: '/settings',  name: 'Settings',   i18nKey: 'nav.settings',  icon: '⚙️' },
+  { path: '/analytics', name: 'Analytics',  i18nKey: 'nav.analytics', icon: '📈' },
 ];
 
 const isActiveRoute = (path: string) =>
@@ -48,26 +50,30 @@ const sidebarClass = computed(() => ({ sidebar: true, open: props.isOpen }));
       </div>
     </div>
 
-    <nav class="nav">
+    <nav class="nav" :aria-label="t('common.appName')">
       <ul class="nav-list">
         <li v-for="item in navItems" :key="item.path" class="nav-item">
           <router-link
               :to="{ name: item.name }"
               class="nav-link"
               :class="{ active: isActiveRoute(item.path) }"
+              :aria-current="isActiveRoute(item.path) ? 'page' : undefined"
               @click="emit('close')"
           >
-            <span class="nav-icon">{{ item.icon }}</span>
-            <span>{{ item.label }}</span>
+            <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
+            <span>{{ t(item.i18nKey) }}</span>
           </router-link>
         </li>
       </ul>
     </nav>
 
     <div class="footer">
+      <router-link to="/terms" class="legal-link" @click="emit('close')">
+        {{ t('terms.title') }}
+      </router-link>
       <button class="logout-btn" @click="handleLogout">
-        <span class="logout-icon">🚪</span>
-        <span>Sign out</span>
+        <span class="logout-icon" aria-hidden="true">🚪</span>
+        <span>{{ t('nav.signOut') }}</span>
       </button>
     </div>
   </aside>
@@ -331,6 +337,19 @@ const sidebarClass = computed(() => ({ sidebar: true, open: props.isOpen }));
 
 .logout-icon {
   font-size: 18px;
+}
+
+.legal-link {
+  display: block;
+  text-align: center;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-decoration: underline;
+  margin-bottom: var(--spacing-sm);
+}
+
+.legal-link:hover {
+  color: var(--primary-green);
 }
 
 /* Mobile Responsive */

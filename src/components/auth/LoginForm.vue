@@ -2,12 +2,14 @@
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { AxiosError } from 'axios';
+import { useI18n } from 'vue-i18n';
 import InputText from 'primevue/inputtext';
 import Password from 'primevue/password';
 import Button from 'primevue/button';
 import Message from 'primevue/message';
 import { useAuthStore } from '@/stores/auth';
 
+const { t } = useI18n();
 const auth = useAuthStore();
 const router = useRouter();
 const route = useRoute();
@@ -18,6 +20,7 @@ const loading = ref(false);
 const errorMessage = ref('');
 
 const canSubmit = computed(() => email.value.trim().length > 0 && password.value.length > 0);
+const hasError = computed(() => errorMessage.value.length > 0);
 
 async function onSubmit(): Promise<void> {
   if (!canSubmit.value) return;
@@ -37,44 +40,47 @@ async function onSubmit(): Promise<void> {
 
 function resolveError(error: unknown): string {
   if (error instanceof AxiosError) {
-    if (error.response?.status === 401) return 'Invalid email or password.';
+    if (error.response?.status === 401) return t('auth.errors.invalidCredentials');
     const title = (error.response?.data as { title?: string } | undefined)?.title;
     if (title) return title;
   }
-  return 'Unable to sign in. Please try again.';
+  return t('auth.errors.signInFailed');
 }
 </script>
 
 <template>
-  <form class="auth-form" @submit.prevent="onSubmit">
+  <form class="auth-form" @submit.prevent="onSubmit" novalidate>
     <label class="auth-form__field">
-      <span class="auth-form__label">Email</span>
+      <span class="auth-form__label">{{ t('auth.email') }}</span>
       <InputText
         v-model="email"
         type="email"
         autocomplete="email"
-        placeholder="you@oryxen.io"
+        :placeholder="t('auth.emailPlaceholder')"
+        aria-required="true"
+        :aria-invalid="hasError"
         fluid
       />
     </label>
 
     <label class="auth-form__field">
-      <span class="auth-form__label">Password</span>
+      <span class="auth-form__label">{{ t('auth.password') }}</span>
       <Password
         v-model="password"
         :feedback="false"
         toggle-mask
         autocomplete="current-password"
-        placeholder="Your password"
+        :placeholder="t('auth.passwordPlaceholder')"
+        :input-props="{ 'aria-required': 'true', 'aria-invalid': hasError }"
         fluid
       />
     </label>
 
-    <Message v-if="errorMessage" severity="error" :closable="false">{{ errorMessage }}</Message>
+    <Message v-if="errorMessage" severity="error" :closable="false" role="alert">{{ errorMessage }}</Message>
 
     <Button
       type="submit"
-      label="Sign in"
+      :label="t('auth.signIn')"
       icon="pi pi-sign-in"
       :loading="loading"
       :disabled="!canSubmit"

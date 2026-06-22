@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { useDashboard } from '../composables/useDashboard';
 import Button from 'primevue/button';
+
+const { t } = useI18n();
 
 const {
   loading,
@@ -15,11 +18,11 @@ const {
 
 <template>
   <div class="dashboard">
-    <div v-if="loading" class="state-message">
-      <p>Loading dashboard...</p>
+    <div v-if="loading" class="state-message" role="status" aria-live="polite">
+      <p>{{ t('dashboard.loading') }}</p>
     </div>
 
-    <div v-else-if="error" class="state-message">
+    <div v-else-if="error" class="state-message" role="alert">
       <p>{{ error }}</p>
     </div>
 
@@ -48,22 +51,22 @@ const {
 
       <div v-if="nextWateringPlant" class="next-watering-card">
         <div class="next-watering-content">
-          <div class="next-watering-label">Next Plant to Water</div>
+          <div class="next-watering-label">{{ t('dashboard.nextToWater') }}</div>
           <div class="next-watering-plant">{{ nextWateringPlant.plantName }}</div>
           <div class="next-watering-time">{{ nextWateringPlant.timeDue }} • {{ nextWateringPlant.location }}</div>
         </div>
         <Button
             class="next-watering-button"
-            label="Water Now"
+            :label="t('dashboard.waterNow')"
             @click="handleWaterNow"
         />
       </div>
 
       <div class="section">
         <div class="section-header">
-          <h2 class="section-title">Recent Activity</h2>
+          <h2 class="section-title">{{ t('dashboard.recentActivity') }}</h2>
           <Button
-              label="View All"
+              :label="t('dashboard.viewAll')"
               outlined
               @click="handleViewAll"
           />

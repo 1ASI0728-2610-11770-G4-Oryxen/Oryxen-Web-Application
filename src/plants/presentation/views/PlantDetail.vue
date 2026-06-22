@@ -2,6 +2,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
 import Avatar from 'primevue/avatar';
@@ -13,6 +14,7 @@ import { useToast } from "primevue/usetoast";
 import { PlantsService } from '../../infrastructure/plants.services';
 import type { Plant as PlantEntity, Metric } from '../../domain/model/plants.entity';
 
+const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
 const plantsService = new PlantsService();
@@ -53,9 +55,9 @@ const waterPlant = async () => {
   try {
     const response = await plantsService.waterPlant(plant.value.id);
     plant.value = response.data;
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Plant watered successfully!', life: 3000 });
+    toast.add({ severity: 'success', summary: t('plants.detail.toastSuccess'), detail: t('plants.detail.watered'), life: 3000 });
   } catch (err) {
-    toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to water the plant.', life: 3000 });
+    toast.add({ severity: 'error', summary: t('plants.detail.toastError'), detail: t('plants.detail.waterFailed'), life: 3000 });
   } finally {
     isWatering.value = false;
   }
@@ -65,20 +67,20 @@ const handleDelete = () => {
   if (!plant.value) return;
 
   confirm.require({
-    message: 'Are you sure you want to delete this plant? This action cannot be undone.',
-    header: 'Confirm Deletion',
+    message: t('plants.detail.confirmDelete'),
+    header: t('plants.detail.confirmHeader'),
     icon: 'pi pi-exclamation-triangle',
     accept: async () => {
       try {
         await plantsService.deletePlant(plant.value!.id);
-        toast.add({ severity: 'success', summary: 'Success', detail: 'Plant deleted successfully', life: 3000 });
+        toast.add({ severity: 'success', summary: t('plants.detail.toastSuccess'), detail: t('plants.detail.deleted'), life: 3000 });
         setTimeout(() => router.push('/plants'), 1500);
       } catch (err) {
-        toast.add({ severity: 'error', summary: 'Error', detail: 'There was an error deleting the plant', life: 3000 });
+        toast.add({ severity: 'error', summary: t('plants.detail.toastError'), detail: t('plants.detail.deleteFailed'), life: 3000 });
       }
     },
     reject: () => {
-      toast.add({ severity: 'info', summary: 'Cancelled', detail: 'Deletion cancelled', life: 3000 });
+      toast.add({ severity: 'info', summary: t('plants.detail.toastInfo'), detail: t('plants.detail.cancelled'), life: 3000 });
     }
   });
 };
@@ -100,15 +102,15 @@ function formatDate(dateStr: string | null): string {
     <ConfirmDialog />
     <Button
         icon="pi pi-arrow-left"
-        label="Back to Plants"
+        :label="t('plants.detail.back')"
         text
         @click="goBack"
         class="back-button"
     />
 
-    <div v-if="isLoading" class="loading-state">
+    <div v-if="isLoading" class="loading-state" role="status" aria-live="polite">
       <ProgressSpinner />
-      <h2>Loading sensor data...</h2>
+      <h2>{{ t('plants.detail.loading') }}</h2>
     </div>
 
     <div v-else-if="plant" class="content-grid">
@@ -117,7 +119,7 @@ function formatDate(dateStr: string | null): string {
         <Card class="plant-card">
           <template #header>
             <div class="plant-image-container">
-              <img :src="plant.imgUrl" :alt="plant.name" class="plant-image" />
+              <img :src="plant.imgUrl" :alt="t('plants.plantImageAlt', { name: plant.name })" class="plant-image" />
             </div>
           </template>
           <template #title>
@@ -146,7 +148,7 @@ function formatDate(dateStr: string | null): string {
               <div class="metric-content">
                 <Avatar icon="pi pi-sun" size="large" shape="circle" class="metric-icon temp" />
                 <div class="metric-info">
-                  <span class="metric-label">Temperature</span>
+                  <span class="metric-label">{{ t('plants.detail.temperature') }}</span>
                   <span class="metric-value">{{ latestMetric?.airTemperatureC ?? 'N/A' }}°C</span>
                 </div>
               </div>
@@ -157,7 +159,7 @@ function formatDate(dateStr: string | null): string {
               <div class="metric-content">
                 <Avatar icon="pi pi-cloud" size="large" shape="circle" class="metric-icon humidity" />
                 <div class="metric-info">
-                  <span class="metric-label">Air Humidity</span>
+                  <span class="metric-label">{{ t('plants.detail.airHumidity') }}</span>
                   <span class="metric-value">{{ latestMetric?.airHumidityPct ?? 'N/A' }}%</span>
                 </div>
               </div>
@@ -168,7 +170,7 @@ function formatDate(dateStr: string | null): string {
               <div class="metric-content">
                 <Avatar icon="pi pi-lightbulb" size="large" shape="circle" class="metric-icon light" />
                 <div class="metric-info">
-                  <span class="metric-label">Light</span>
+                  <span class="metric-label">{{ t('plants.detail.light') }}</span>
                   <span class="metric-value">{{ latestMetric?.lightIntensityLux ?? 'N/A' }} lm</span>
                 </div>
               </div>
@@ -177,13 +179,13 @@ function formatDate(dateStr: string | null): string {
           <Card class="metric-card">
             <template #content>
               <div class="metric-content">
-                <div class="metric-icon soil" role="img" aria-label="Soil humidity">
+                <div class="metric-icon soil" role="img" :aria-label="t('plants.detail.soilHumidity')">
                   <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                     <path fill="currentColor" d="M12 2s-7 7-7 12a7 7 0 0014 0c0-5-7-12-7-12z" />
                   </svg>
                 </div>
                 <div class="metric-info">
-                  <span class="metric-label">Soil Humidity</span>
+                  <span class="metric-label">{{ t('plants.detail.soilHumidity') }}</span>
                   <span class="metric-value">{{ latestMetric?.soilMoisturePct ?? 'N/A' }}%</span>
                 </div>
               </div>
@@ -192,20 +194,20 @@ function formatDate(dateStr: string | null): string {
         </div>
 
         <Card class="watering-card">
-          <template #title>Watering Schedule</template>
+          <template #title>{{ t('plants.detail.wateringSchedule') }}</template>
           <template #content>
             <div class="watering-details">
               <div class="watering-item">
-                <i class="pi pi-calendar-times"></i>
+                <i class="pi pi-calendar-times" aria-hidden="true"></i>
                 <div>
-                  <span class="watering-label">Last Watered</span>
+                  <span class="watering-label">{{ t('plants.detail.lastWatered') }}</span>
                   <p>{{ formatDate(plant.lastWatered) }}</p>
                 </div>
               </div>
               <div class="watering-item">
-                <i class="pi pi-calendar-plus"></i>
+                <i class="pi pi-calendar-plus" aria-hidden="true"></i>
                 <div>
-                  <span class="watering-label">Next Watering</span>
+                  <span class="watering-label">{{ t('plants.detail.nextWatering') }}</span>
                   <p>{{ formatDate(plant.nextWatering) }}</p>
                 </div>
               </div>
@@ -218,22 +220,22 @@ function formatDate(dateStr: string | null): string {
               class="water-button"
               @click="waterPlant"
               :disabled="isWatering"
-              aria-label="Water Plant"
+              :aria-label="t('plants.detail.waterPlant')"
           >
-            <span v-if="!isWatering" class="water-drop-icon">
+            <span v-if="!isWatering" class="water-drop-icon" aria-hidden="true">
               <svg viewBox="0 0 100 125">
                 <path class="drop-outline" d="M50,5.5c-19.8,0-35.8,16.1-35.8,35.8c0,17.5,12.8,32.3,29.8,35.3V95h12V76.6c17-3,29.8-17.8,29.8-35.3 C85.8,21.6,69.8,5.5,50,5.5z"/>
                 <path class="drop-fill" d="M50,5.5c-19.8,0-35.8,16.1-35.8,35.8c0,17.5,12.8,32.3,29.8,35.3V95h12V76.6c17-3,29.8-17.8,29.8-35.3 C85.8,21.6,69.8,5.5,50,5.5z"/>
               </svg>
             </span>
             <ProgressSpinner v-if="isWatering" style="width: 24px; height: 24px" strokeWidth="6" />
-            <span class="p-button-label">{{ isWatering ? 'Watering...' : 'Water Plant' }}</span>
+            <span class="p-button-label">{{ isWatering ? t('plants.detail.watering') : t('plants.detail.waterPlant') }}</span>
           </Button>
         </div>
 
         <div class="actions-footer">
           <Button
-              label="Delete Plant"
+              :label="t('plants.detail.deletePlant')"
               icon="pi pi-trash"
               severity="danger"
               outlined
@@ -243,9 +245,9 @@ function formatDate(dateStr: string | null): string {
       </div>
     </div>
 
-    <div v-else class="not-found">
-      <h2>Plant Not Found</h2>
-      <p>The specified ID does not correspond to any registered plant.</p>
+    <div v-else class="not-found" role="alert">
+      <h2>{{ t('plants.detail.notFound') }}</h2>
+      <p>{{ t('plants.detail.notFoundText') }}</p>
     </div>
   </div>
 </template>

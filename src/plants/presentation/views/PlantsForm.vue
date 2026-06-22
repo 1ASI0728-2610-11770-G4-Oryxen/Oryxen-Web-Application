@@ -2,47 +2,59 @@
   <div class="plant-form-card">
     <Button
         icon="pi pi-arrow-left"
-        label="Back to Plants"
+        :label="t('plants.form.back')"
         text
         @click="goBack"
         class="back-button"
     />
-    <h2 class="form-title">Add a Plant</h2>
+    <h2 class="form-title">{{ t('plants.form.addTitle') }}</h2>
 
-    <form @submit.prevent="onSubmit" class="form-grid">
+    <form @submit.prevent="onSubmit" class="form-grid" novalidate>
       <div class="field">
-        <label for="name">Name</label>
-        <InputText id="name" v-model="form.name" placeholder="e.g. Monstera Deliciosa" />
-        <small v-if="errors.name" class="error">{{ errors.name }}</small>
+        <label for="name">{{ t('plants.form.name') }}</label>
+        <InputText
+            id="name"
+            v-model="form.name"
+            :placeholder="t('plants.form.namePlaceholder')"
+            aria-required="true"
+            :aria-invalid="!!errors.name"
+        />
+        <small v-if="errors.name" class="error" role="alert">{{ errors.name }}</small>
       </div>
 
       <div class="field">
-        <label for="type">Type</label>
-        <InputText id="type" v-model="form.type" placeholder="e.g. Tropical, Succulent" />
-        <small v-if="errors.type" class="error">{{ errors.type }}</small>
+        <label for="type">{{ t('plants.form.type') }}</label>
+        <InputText
+            id="type"
+            v-model="form.type"
+            :placeholder="t('plants.form.typePlaceholder')"
+            aria-required="true"
+            :aria-invalid="!!errors.type"
+        />
+        <small v-if="errors.type" class="error" role="alert">{{ errors.type }}</small>
       </div>
 
       <div class="field">
-        <label for="imgUrl">Image URL</label>
+        <label for="imgUrl">{{ t('plants.form.imageUrl') }}</label>
         <InputText id="imgUrl" v-model="form.imgUrl" placeholder="https://..." />
-        <small class="hint">You can paste an image URL from the web.</small>
+        <small class="hint">{{ t('plants.form.imageHint') }}</small>
       </div>
 
       <div class="field">
-        <label for="location">Location</label>
-        <InputText id="location" v-model="form.location" placeholder="e.g. Living Room" />
+        <label for="location">{{ t('plants.form.location') }}</label>
+        <InputText id="location" v-model="form.location" :placeholder="t('plants.form.locationPlaceholder')" />
       </div>
 
       <div class="field full">
-        <label for="bio">Bio</label>
-        <Textarea id="bio" v-model="form.bio" rows="4" placeholder="Describe your plant..." />
+        <label for="bio">{{ t('plants.form.bio') }}</label>
+        <Textarea id="bio" v-model="form.bio" rows="4" :placeholder="t('plants.form.bioPlaceholder')" />
       </div>
 
-      <div v-if="serverError.message" class="server-error">{{ serverError.message }}</div>
+      <div v-if="serverError.message" class="server-error" role="alert">{{ serverError.message }}</div>
 
       <div class="actions">
-        <Button type="button" class="btn-ghost" @click="onReset">Reset</Button>
-        <Button type="submit" class="btn-primary">Save Plant</Button>
+        <Button type="button" class="btn-ghost" @click="onReset">{{ t('plants.form.reset') }}</Button>
+        <Button type="submit" class="btn-primary">{{ t('plants.form.save') }}</Button>
       </div>
     </form>
   </div>
@@ -51,6 +63,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useAuthenticationStore } from '../../../iam/services/Authentication.Store';
 import InputText from 'primevue/inputtext';
 import Textarea from 'primevue/textarea';
@@ -58,6 +71,7 @@ import Button from 'primevue/button';
 import { PlantsService } from '../../infrastructure/plants.services';
 import type { Plant } from '../../domain/model/plants.entity';
 
+const { t } = useI18n();
 const router = useRouter();
 const plantsService = new PlantsService();
 
@@ -76,8 +90,8 @@ const errors = reactive<Record<string, string>>({});
 const serverError = reactive<{ message: string | null }>({ message: null });
 
 const validate = () => {
-  errors.name = form.name && form.name.trim() ? '' : 'Name is required';
-  errors.type = form.type && form.type.trim() ? '' : 'Type is required';
+  errors.name = form.name && form.name.trim() ? '' : t('plants.form.nameRequired');
+  errors.type = form.type && form.type.trim() ? '' : t('plants.form.typeRequired');
   return !Object.values(errors).some(v => v);
 };
 
@@ -86,14 +100,14 @@ const onSubmit = async () => {
   if (!validate()) return;
 
   if (!authStore.isSignedIn || !authStore.token) {
-    serverError.message = 'You must be signed in to create a plant. Redirecting...';
+    serverError.message = t('plants.form.mustSignIn');
     setTimeout(() => router.push({ name: 'SignIn' }), 2000);
     return;
   }
 
   const userId = authStore.uuid;
   if (!userId) {
-    serverError.message = 'No userId found to associate the plant.';
+    serverError.message = t('plants.form.noUser');
     return;
   }
 
@@ -116,19 +130,19 @@ const onSubmit = async () => {
     router.push('/plants');
   } catch (err: any) {
     if (err?.response?.status === 401) {
-      serverError.message = 'Session expired. Please sign in again.';
+      serverError.message = t('plants.form.sessionExpired');
       setTimeout(() => {
         authStore.signOut();
         router.push({ name: 'SignIn' });
       }, 2000);
     } else if (err?.response?.status === 403) {
-      serverError.message = 'You do not have permission to create plants.';
+      serverError.message = t('plants.form.noPermission');
     } else if (err?.response?.status === 400) {
-      const backendMsg = err?.response?.data?.message || err?.response?.data || 'Invalid data';
-      serverError.message = `Validation error: ${backendMsg}`;
+      const backendMsg = err?.response?.data?.title || err?.response?.data?.message || err?.response?.data || 'Invalid data';
+      serverError.message = t('plants.form.validationError', { msg: backendMsg });
     } else {
-      const backendMsg = err?.response?.data?.message || err?.message || 'Unknown error';
-      serverError.message = `Error: ${backendMsg}`;
+      const backendMsg = err?.response?.data?.title || err?.response?.data?.message || err?.message || 'Unknown error';
+      serverError.message = t('plants.form.genericError', { msg: backendMsg });
     }
   }
 };

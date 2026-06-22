@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { AnalyticsService } from '../../infrastructure/analytics.service';
 import { PlantsService } from '../../../plants/infrastructure/plants.services';
+import { useAuthStore } from '@/stores/auth';
 import type { Analytics } from '../../domain/model/analytics.entity.ts';
 import type { Plant } from '../../../plants/domain/model/plants.entity.ts';
 
@@ -15,6 +16,7 @@ interface Summary {
 
 const analyticsService = new AnalyticsService();
 const plantsService    = new PlantsService();
+const auth             = useAuthStore();
 
 const loading        = ref(false);
 const loadingHistory = ref(false);
@@ -93,13 +95,12 @@ const loadData = async () => {
   loading.value = true;
   error.value   = null;
   try {
-    const userId = localStorage.getItem('userUuid');
-    if (!userId) {
+    if (!auth.isAuthenticated) {
       error.value = 'No user session found.';
       return;
     }
 
-    const plantsResponse = await plantsService.getPlantsByUser(userId);
+    const plantsResponse = await plantsService.getPlantsByUser();
     plants.value = plantsResponse.data;
 
     analytics.value = plants.value
