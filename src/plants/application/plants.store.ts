@@ -31,7 +31,7 @@ export const usePlantManagementStore = defineStore('plantManagement', () => {
     if (idx !== -1) plants.value[idx] = updated;
   };
 
-  const removePlant = (id: number) => {
+  const removePlant = (id: string) => {
     plants.value = plants.value.filter(p => p.id !== id);
   };
 

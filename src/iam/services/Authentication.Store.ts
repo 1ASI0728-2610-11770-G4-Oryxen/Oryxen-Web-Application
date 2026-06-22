@@ -16,9 +16,9 @@ export const useAuthenticationStore = defineStore('iam-authentication', () => {
 
   const isSignedIn = computed(() => auth.isAuthenticated);
   const token = computed(() => tokenStorage.getAccessToken() ?? '');
-  // The backend currently issues identity by email; `userUuid` is kept for forward
-  // compatibility once a dedicated user id is returned by the API.
-  const uuid = computed(() => localStorage.getItem('userUuid') ?? auth.user?.email ?? '');
+  // User id (Guid) is resolved from the JWT `sub` claim issued by the .NET backend,
+  // replacing the stale `localStorage('userUuid')` lookup that was never populated.
+  const uuid = computed(() => tokenStorage.getUserId() ?? '');
 
   function signOut(): void {
     auth.logout();

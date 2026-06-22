@@ -46,7 +46,7 @@ const filteredPlants = computed(() => {
 const getStatusLabel = (status: string) =>
     status.charAt(0).toUpperCase() + status.slice(1);
 
-const navigateToPlant = (plantId: number) => router.push(`/plants/${plantId}`);
+const navigateToPlant = (plantId: string) => router.push(`/plants/${plantId}`);
 const handleAddPlant      = () => router.push('/plants/new');
 const handleAddFirstPlant = () => router.push('/plants/new');
 

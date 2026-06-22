@@ -20,7 +20,7 @@ interface BackendPlant {
 export class PlantAssembler {
   static toDomain(raw: BackendPlant): Plant {
     return {
-      id: Number(raw.id),
+      id: String(raw.id),
       userId: String(raw.userId),
       name: raw.name ?? '',
       type: raw.type ?? '',

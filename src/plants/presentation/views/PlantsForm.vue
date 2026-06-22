@@ -91,7 +91,7 @@ const onSubmit = async () => {
     return;
   }
 
-  const userId = authStore.uuid || localStorage.getItem('userUuid') || '';
+  const userId = authStore.uuid;
   if (!userId) {
     serverError.message = 'No userId found to associate the plant.';
     return;

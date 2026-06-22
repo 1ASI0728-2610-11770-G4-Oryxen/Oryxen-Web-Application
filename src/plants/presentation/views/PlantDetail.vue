@@ -22,7 +22,7 @@ const toast = useToast();
 const plant = ref<PlantEntity | null>(null);
 const isLoading = ref(true);
 const isWatering = ref(false);
-const plantId = Number(route.params.id);
+const plantId = String(route.params.id);
 
 onMounted(async () => {
   try {

@@ -1,7 +1,7 @@
 
 export interface Metric {
-  id: number | null;
-  plantId: number;
+  id: string | null;
+  plantId: string;
   deviceId: string;
   airTemperatureC: number;
   airHumidityPct: number;
@@ -11,13 +11,13 @@ export interface Metric {
 }
 
 export interface WateringLog {
-  id: number;
-  plantId: number;
+  id: string;
+  plantId: string;
   wateredAt: string;
 }
 
 export interface Plant {
-  id: number;
+  id: string;
   userId: string;
   name: string;
   type: string;
