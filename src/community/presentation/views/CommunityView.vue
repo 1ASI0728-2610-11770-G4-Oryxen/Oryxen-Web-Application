@@ -248,7 +248,9 @@ function imageSrc(relativeUrl: string | null): string | undefined {
                 :severity="post.likedByCurrentUser ? 'danger' : 'secondary'"
                 text
                 :aria-pressed="post.likedByCurrentUser"
-                :aria-label="`Like post by ${post.authorName}`"
+                :aria-label="post.likedByCurrentUser
+                  ? $t('community.unlikeAria', { author: post.authorName })
+                  : $t('community.likeAria', { author: post.authorName })"
                 @click="handleToggleLike(post.id)"
               />
               <Button

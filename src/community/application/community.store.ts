@@ -18,7 +18,7 @@ export const useCommunityStore = defineStore('community', () => {
     if (subscriptionChecked.value) return isPremium.value;
     try {
       const sub = await billingService.getCurrentSubscription();
-      isPremium.value = sub.plan.toLowerCase() === 'premium';
+      isPremium.value = sub.plan.toLowerCase() === 'premium' && sub.status.toLowerCase() === 'active';
       subscriptionChecked.value = true;
       return isPremium.value;
     } catch {

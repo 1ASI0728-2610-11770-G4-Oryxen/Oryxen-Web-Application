@@ -211,7 +211,9 @@
     "premiumTitle": "Función Premium",
     "premiumMessage": "El acceso a la comunidad es exclusivo para suscriptores Premium. Mejora tu plan para unirte a la red de soporte agrícola.",
     "upgradeNow": "Mejorar Ahora",
-    "goBack": "Volver"
+    "goBack": "Volver",
+    "likeAria": "Dar me gusta a publicación de {author}",
+    "unlikeAria": "Quitar me gusta a publicación de {author}"
   },
   "terms": {
     "title": "Términos y Condiciones",

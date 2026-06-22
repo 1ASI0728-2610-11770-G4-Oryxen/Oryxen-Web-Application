@@ -211,7 +211,9 @@
     "premiumTitle": "Premium Feature",
     "premiumMessage": "Community access is exclusive to Premium subscribers. Upgrade your plan to join the agricultural support network.",
     "upgradeNow": "Upgrade Now",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "likeAria": "Like post by {author}",
+    "unlikeAria": "Unlike post by {author}"
   },
   "terms": {
     "title": "Terms & Conditions",
