@@ -9,7 +9,7 @@ import ProgressSpinner from 'primevue/progressspinner';
 import Message from 'primevue/message';
 
 import { billingService } from '@/billing/infrastructure/billing.service';
-import type { Plan } from '@/billing/domain/model/billing.entity';
+import type { Plan, SubscriptionInfo } from '@/billing/domain/model/billing.entity';
 
 const { t } = useI18n();
 const toast = useToast();
@@ -18,11 +18,17 @@ const plans = ref<Plan[]>([]);
 const loading = ref(false);
 const checkoutLoading = ref<string | null>(null);
 const error = ref<string | null>(null);
+const subscription = ref<SubscriptionInfo | null>(null);
 
 onMounted(async () => {
   loading.value = true;
   try {
-    plans.value = await billingService.getPlans();
+    const [fetchedPlans, sub] = await Promise.all([
+      billingService.getPlans(),
+      billingService.getCurrentSubscription().catch(() => null),
+    ]);
+    plans.value = fetchedPlans;
+    subscription.value = sub;
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Failed to load plans';
   } finally {
@@ -64,6 +70,15 @@ function isPremium(plan: Plan): boolean {
   <div class="billing-pricing" role="main" aria-labelledby="billing-title">
     <h1 id="billing-title" class="billing-pricing__title">{{ t('billing.title') }}</h1>
     <p class="billing-pricing__subtitle">{{ t('billing.subtitle') }}</p>
+
+    <div v-if="subscription" class="billing-pricing__current">
+      <Message severity="info" :closable="false">
+        <strong>{{ t('billing.currentPlan') }}:</strong> {{ subscription.plan }}
+        <span v-if="subscription.nextBillingDate">
+          — Next billing: {{ new Date(subscription.nextBillingDate).toLocaleDateString() }}
+        </span>
+      </Message>
+    </div>
 
     <div v-if="loading" class="billing-pricing__loading" role="status" aria-live="polite">
       <ProgressSpinner />
@@ -125,7 +140,10 @@ function isPremium(plan: Plan): boolean {
 }
 .billing-pricing__subtitle {
   color: var(--text-secondary, #6b7280);
-  margin: 0 0 2rem;
+  margin: 0 0 1.5rem;
+}
+.billing-pricing__current {
+  margin-bottom: 1.5rem;
 }
 .billing-pricing__loading {
   display: flex;

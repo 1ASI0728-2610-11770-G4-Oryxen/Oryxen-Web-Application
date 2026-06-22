@@ -75,12 +75,13 @@ function formatDate(iso: string): string {
       <p>{{ t('notifications.empty') }}</p>
     </div>
 
-    <div v-else class="notifications-page__list" role="list">
+    <div v-else class="notifications-page__list" role="log" aria-live="polite" aria-label="Notificaciones">
       <div
         v-for="n in sorted"
         :key="n.id"
         :class="['notifications-page__item', { 'notifications-page__item--unread': !n.isRead }]"
         role="listitem"
+        :aria-label="`${n.title}: ${n.message}`"
       >
         <div class="notifications-page__item-header">
           <Tag

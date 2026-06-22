@@ -23,6 +23,7 @@ const navItems = [
   { path: '/diagnosis', name: 'DiagnosisHome', i18nKey: 'nav.diagnosis', icon: '🤖' },
   { path: '/notifications', name: 'Notifications', i18nKey: 'nav.notifications', icon: '🔔' },
   { path: '/analytics', name: 'Analytics',  i18nKey: 'nav.analytics', icon: '📈' },
+  { path: '/community', name: 'Community',  i18nKey: 'nav.community', icon: '👥' },
   { path: '/billing',   name: 'Pricing',    i18nKey: 'nav.billing',   icon: '💳' },
   { path: '/settings',  name: 'Settings',   i18nKey: 'nav.settings',  icon: '⚙️' },
 ];

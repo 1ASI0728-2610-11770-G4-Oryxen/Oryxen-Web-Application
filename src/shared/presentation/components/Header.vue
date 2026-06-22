@@ -45,11 +45,19 @@ const toggleLanguage = () => setLocale(nextLocale.value);
       <Button
         class="notification-btn"
         text
-        :aria-label="t('header.notifications')"
+        :aria-label="notificationStore.unreadCount > 0
+          ? t('notifications.unreadBadgeAria', { count: notificationStore.unreadCount })
+          : t('header.notifications')"
+        role="status"
         :to="{ name: 'Notifications' }"
       >
         <span class="bell-icon" aria-hidden="true">🔔</span>
-        <span v-if="notificationStore.unreadCount > 0" class="notification-badge" aria-live="polite">
+        <span
+          v-if="notificationStore.unreadCount > 0"
+          class="notification-badge"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {{ notificationStore.unreadCount > 9 ? '9+' : notificationStore.unreadCount }}
         </span>
       </Button>

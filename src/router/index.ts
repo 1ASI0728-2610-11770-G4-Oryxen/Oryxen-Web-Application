@@ -5,6 +5,7 @@ import plantManagementRoutes from '@/plants/presentation/plants-routes';
 import aiRoutes from '@/ai/presentation/ai-routes';
 import billingRoutes from '@/billing/presentation/billing-routes';
 import notificationRoutes from '@/notifications/presentation/notification-routes';
+import communityRoutes from '@/community/presentation/community-routes';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -83,6 +84,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/notifications/presentation/views/NotificationsView.vue'),
     meta: { requiresAuth: true },
     children: notificationRoutes,
+  },
+  {
+    path: '/community',
+    component: () => import('@/community/presentation/views/CommunityView.vue'),
+    meta: { requiresAuth: true },
+    children: communityRoutes,
   },
   {
     path: '/settings',

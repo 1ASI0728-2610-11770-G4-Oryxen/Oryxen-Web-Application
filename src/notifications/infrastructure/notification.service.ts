@@ -13,7 +13,7 @@ export class NotificationService {
   }
 
   async markAsRead(id: string): Promise<void> {
-    await apiClient.post(`/notifications/${id}/read`);
+    await apiClient.patch(`/notifications/${id}/read`);
   }
 }
 

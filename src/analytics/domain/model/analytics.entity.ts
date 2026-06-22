@@ -1,74 +1,83 @@
-/**
- * Datos de sensor recibidos del backend
- */
-export interface SensorData {
-  /** ID único del dato del sensor */
-  id: number;
-
-  /** ID del dispositivo/sensor */
-  device_id: string;
-
-  /** Temperatura en grados Celsius */
-  temperature: number;
-
-  /** Humedad ambiental en porcentaje */
-  humidity: number;
-
-  /** Nivel de luz */
-  light: number;
-
-  /** Humedad del suelo en porcentaje */
-  soil_humidity: number;
-
-  /** Fecha de creación del registro (ISO 8601 string) */
-  created_at: string;
-}
-
-/**
- * Resumen estadístico calculado a partir de los datos del sensor
- */
-export interface AnalyticsSummary {
-  /** Promedio de temperatura durante el período (°C) */
-  avgTemperature: number;
-
-  /** Promedio de humedad ambiental durante el período (%) */
-  avgHumidity: number;
-
-  /** Promedio de humedad del suelo durante el período (%) */
+export interface PlantHealthSummary {
+  plantId: string;
+  plantName: string;
+  plantType: string;
+  status: string;
+  avgHealthScore: number;
   avgSoilMoisture: number;
-
-  /** Promedio de luz durante el período */
-  avgLight: number;
-
-  /** Temperatura mínima registrada */
-  minTemperature: number;
-
-  /** Temperatura máxima registrada */
-  maxTemperature: number;
-
-  /** Número total de lecturas */
-  totalReadings: number;
+  readingCount: number;
+  lastReadingAt: string | null;
 }
 
-/**
- * Analytics agregados por dispositivo/planta
- */
-export interface Analytics {
-  /** ID del dispositivo asociado */
-  deviceId: string;
+export interface DashboardResponse {
+  totalPlants: number;
+  healthyPlants: number;
+  warningPlants: number;
+  criticalPlants: number;
+  avgHumidity: number;
+  avgTemperature: number;
+  avgSoilMoisture: number;
+  avgLightLevel: number;
+  avgHealthScore: number;
+  totalReadings: number;
+  plantSummaries: PlantHealthSummary[];
+}
 
-  /** ID de la planta (si está asociada) */
-  plantId?: number;
+export interface TrendPoint {
+  label: string;
+  avgHealthScore: number;
+  avgSoilMoisture: number;
+  avgTemperature: number;
+  avgHumidity: number;
+  readingCount: number;
+}
 
-  /** Fecha de inicio del período de análisis */
-  periodStart: string;
+export interface PlantTrendResponse {
+  plantId: string;
+  plantName: string;
+  daily: TrendPoint[];
+  weekly: TrendPoint[];
+  monthly: TrendPoint[];
+}
 
-  /** Fecha de fin del período de análisis */
-  periodEnd: string;
+export interface ReportItemResponse {
+  id: string;
+  plantId: string;
+  plantName: string;
+  type: string;
+  status: string;
+  format: string;
+  rangeStart: string;
+  rangeEnd: string;
+  createdAt: string;
+  generatedAt: string | null;
+}
 
-  /** Resumen estadístico del período */
-  summary: AnalyticsSummary;
+export interface ReportListResponse {
+  items: ReportItemResponse[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}
 
-  /** Datos crudos del sensor */
-  sensorData: SensorData[];
+export interface ReportDetailResponse {
+  id: string;
+  plantId: string;
+  plantName: string;
+  type: string;
+  status: string;
+  format: string;
+  rangeStart: string;
+  rangeEnd: string;
+  fileContent: string | null;
+  createdAt: string;
+  generatedAt: string | null;
+}
+
+export interface GenerateReportRequest {
+  plantId: string;
+  rangeStart: string;
+  rangeEnd: string;
+  type: string;
+  format: string;
 }
