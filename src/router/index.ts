@@ -2,6 +2,9 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/auth';
 import analyticsRoutes from '@/analytics/presentation/analytics-routes';
 import plantManagementRoutes from '@/plants/presentation/plants-routes';
+import aiRoutes from '@/ai/presentation/ai-routes';
+import billingRoutes from '@/billing/presentation/billing-routes';
+import notificationRoutes from '@/notifications/presentation/notification-routes';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -62,6 +65,24 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/analytics/presentation/views/Analytics.vue'),
     meta: { requiresAuth: true },
     children: analyticsRoutes,
+  },
+  {
+    path: '/diagnosis',
+    component: () => import('@/ai/presentation/views/DiagnosisView.vue'),
+    meta: { requiresAuth: true },
+    children: aiRoutes,
+  },
+  {
+    path: '/billing',
+    component: () => import('@/billing/presentation/views/PricingView.vue'),
+    meta: { requiresAuth: true },
+    children: billingRoutes,
+  },
+  {
+    path: '/notifications',
+    component: () => import('@/notifications/presentation/views/NotificationsView.vue'),
+    meta: { requiresAuth: true },
+    children: notificationRoutes,
   },
   {
     path: '/settings',

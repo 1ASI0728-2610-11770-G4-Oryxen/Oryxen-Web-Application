@@ -1,17 +1,21 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import Button from 'primevue/button';
 import { setLocale, type AppLocale } from '@/i18n';
+import { useNotificationStore } from '@/notifications/application/notification.store';
 
-const emit = defineEmits<{
-  menuClick: [];
-}>();
+const emit = defineEmits<{ menuClick: [] }>();
 
 const { t, locale } = useI18n();
+const notificationStore = useNotificationStore();
 
 const theme = ref<'light' | 'dark'>('light');
 const isToggling = ref(false);
+
+onMounted(() => {
+  notificationStore.fetchUnreadCount();
+});
 
 const toggleTheme = () => {
   isToggling.value = true;
@@ -20,7 +24,6 @@ const toggleTheme = () => {
   setTimeout(() => { isToggling.value = false; }, 500);
 };
 
-// Language switcher: button shows the language it will switch TO.
 const nextLocale = computed<AppLocale>(() => (locale.value === 'en' ? 'es' : 'en'));
 const langLabel = computed(() => (locale.value === 'en' ? 'ES' : 'EN'));
 const langAriaLabel = computed(() =>
@@ -39,6 +42,18 @@ const toggleLanguage = () => setLocale(nextLocale.value);
     </div>
 
     <div class="header-right">
+      <Button
+        class="notification-btn"
+        text
+        :aria-label="t('header.notifications')"
+        :to="{ name: 'Notifications' }"
+      >
+        <span class="bell-icon" aria-hidden="true">🔔</span>
+        <span v-if="notificationStore.unreadCount > 0" class="notification-badge" aria-live="polite">
+          {{ notificationStore.unreadCount > 9 ? '9+' : notificationStore.unreadCount }}
+        </span>
+      </Button>
+
       <Button
         class="lang-toggle"
         outlined
@@ -136,6 +151,49 @@ const toggleLanguage = () => setLocale(nextLocale.value);
   display: flex;
   align-items: center;
   gap: var(--spacing-lg);
+}
+
+.notification-btn {
+  position: relative;
+  background: var(--bg-primary) !important;
+  border: 2px solid var(--border-color) !important;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.notification-btn:hover {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+}
+
+.bell-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.4);
 }
 
 .theme-toggle,

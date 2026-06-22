@@ -9,6 +9,9 @@
     "plants": "Plants",
     "settings": "Settings",
     "analytics": "Analytics",
+    "diagnosis": "AI Diagnosis",
+    "billing": "Plans & Billing",
+    "notifications": "Notifications",
     "signOut": "Sign out"
   },
   "header": {
@@ -18,7 +21,8 @@
     "themeLight": "Light",
     "toggleTheme": "Toggle theme",
     "switchToSpanish": "Cambiar a Español",
-    "switchToEnglish": "Switch to English"
+    "switchToEnglish": "Switch to English",
+    "notifications": "Notifications"
   },
   "auth": {
     "signInSubtitle": "Sign in to monitor your plants.",
@@ -126,6 +130,53 @@
       "toastError": "Error",
       "toastInfo": "Cancelled"
     }
+  },
+  "ai": {
+    "title": "AI Crop Health Diagnosis",
+    "subtitle": "Upload a photo of your plant for AI-powered health analysis combining image recognition and sensor telemetry.",
+    "selectPlant": "Select a plant",
+    "dragDrop": "Drag & drop a plant photo here or click to browse",
+    "uploadHint": "JPG, PNG or WebP — max 10 MB",
+    "previewAlt": "Selected plant photo preview",
+    "changeImage": "Change image",
+    "analyze": "Analyze with AI",
+    "analyzing": "Analyzing plant photo with Gemini Vision AI...",
+    "analysisComplete": "Analysis complete",
+    "analysisFailed": "Analysis failed",
+    "resultTitle": "Diagnosis Result",
+    "detectedPest": "Detected anomaly",
+    "confidence": "Confidence",
+    "recommendation": "Recommendation",
+    "noPestDetected": "No anomaly detected",
+    "history": "Diagnosis history",
+    "noHistory": "No diagnoses yet for this plant",
+    "noPlants": "You need to register a plant before running an AI diagnosis.",
+    "tryAgain": "Try again"
+  },
+  "billing": {
+    "title": "Plans & Pricing",
+    "subtitle": "Choose the plan that best fits your needs.",
+    "loading": "Loading plans...",
+    "month": "month",
+    "popular": "Popular",
+    "upgrade": "Upgrade",
+    "currentPlan": "Current Plan",
+    "checkoutTitle": "Checkout",
+    "checkoutRedirect": "Redirecting to Stripe checkout...",
+    "checkoutSuccess": "Payment successful! Your Premium plan is now active.",
+    "checkoutCancel": "Checkout was cancelled. You can try again anytime.",
+    "checkoutFailed": "Checkout failed",
+    "backToPlans": "Back to plans"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "unread": "unread",
+    "empty": "No notifications yet",
+    "markRead": "Mark as read",
+    "typeCriticalHealth": "Critical Health",
+    "typeHighAnomalies": "High Anomalies",
+    "typeWateringReminder": "Watering Reminder",
+    "typeSystemUpdate": "System Update"
   },
   "terms": {
     "title": "Terms & Conditions",

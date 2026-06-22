@@ -9,6 +9,9 @@
     "plants": "Plantas",
     "settings": "Ajustes",
     "analytics": "Analíticas",
+    "diagnosis": "Diagnóstico IA",
+    "billing": "Planes y Facturación",
+    "notifications": "Notificaciones",
     "signOut": "Cerrar sesión"
   },
   "header": {
@@ -18,7 +21,8 @@
     "themeLight": "Claro",
     "toggleTheme": "Cambiar tema",
     "switchToSpanish": "Cambiar a Español",
-    "switchToEnglish": "Switch to English"
+    "switchToEnglish": "Switch to English",
+    "notifications": "Notificaciones"
   },
   "auth": {
     "signInSubtitle": "Inicia sesión para monitorear tus plantas.",
@@ -126,6 +130,53 @@
       "toastError": "Error",
       "toastInfo": "Cancelado"
     }
+  },
+  "ai": {
+    "title": "Diagnóstico IA de Salud Vegetal",
+    "subtitle": "Sube una foto de tu planta para un análisis de salud con IA que combina reconocimiento de imagen y telemetría de sensores.",
+    "selectPlant": "Selecciona una planta",
+    "dragDrop": "Arrastra una foto de la planta aquí o haz clic para explorar",
+    "uploadHint": "JPG, PNG o WebP — máximo 10 MB",
+    "previewAlt": "Vista previa de la foto de la planta seleccionada",
+    "changeImage": "Cambiar imagen",
+    "analyze": "Analizar con IA",
+    "analyzing": "Analizando foto de la planta con Gemini Vision AI...",
+    "analysisComplete": "Análisis completado",
+    "analysisFailed": "Análisis fallido",
+    "resultTitle": "Resultado del diagnóstico",
+    "detectedPest": "Anomalía detectada",
+    "confidence": "Confianza",
+    "recommendation": "Recomendación",
+    "noPestDetected": "Sin anomalías detectadas",
+    "history": "Historial de diagnósticos",
+    "noHistory": "Aún no hay diagnósticos para esta planta",
+    "noPlants": "Necesitas registrar una planta antes de ejecutar un diagnóstico IA.",
+    "tryAgain": "Intentar de nuevo"
+  },
+  "billing": {
+    "title": "Planes y Precios",
+    "subtitle": "Elige el plan que mejor se adapte a tus necesidades.",
+    "loading": "Cargando planes...",
+    "month": "mes",
+    "popular": "Popular",
+    "upgrade": "Mejorar",
+    "currentPlan": "Plan Actual",
+    "checkoutTitle": "Pago",
+    "checkoutRedirect": "Redirigiendo a Stripe...",
+    "checkoutSuccess": "¡Pago exitoso! Tu plan Premium está activo.",
+    "checkoutCancel": "El pago fue cancelado. Puedes intentarlo de nuevo.",
+    "checkoutFailed": "Pago fallido",
+    "backToPlans": "Volver a planes"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "unread": "sin leer",
+    "empty": "Aún no hay notificaciones",
+    "markRead": "Marcar como leída",
+    "typeCriticalHealth": "Salud Crítica",
+    "typeHighAnomalies": "Anomalías Altas",
+    "typeWateringReminder": "Recordatorio de Riego",
+    "typeSystemUpdate": "Actualización del Sistema"
   },
   "terms": {
     "title": "Términos y Condiciones",

@@ -20,8 +20,11 @@ const auth   = useAuthStore();
 const navItems = [
   { path: '/dashboard', name: 'Dashboard', i18nKey: 'nav.dashboard', icon: '📊' },
   { path: '/plants',    name: 'PlantsList', i18nKey: 'nav.plants',    icon: '🌱' },
-  { path: '/settings',  name: 'Settings',   i18nKey: 'nav.settings',  icon: '⚙️' },
+  { path: '/diagnosis', name: 'DiagnosisHome', i18nKey: 'nav.diagnosis', icon: '🤖' },
+  { path: '/notifications', name: 'Notifications', i18nKey: 'nav.notifications', icon: '🔔' },
   { path: '/analytics', name: 'Analytics',  i18nKey: 'nav.analytics', icon: '📈' },
+  { path: '/billing',   name: 'Pricing',    i18nKey: 'nav.billing',   icon: '💳' },
+  { path: '/settings',  name: 'Settings',   i18nKey: 'nav.settings',  icon: '⚙️' },
 ];
 
 const isActiveRoute = (path: string) =>
